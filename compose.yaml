@@ -1,0 +1,27 @@
+services:
+  database:
+    container_name: database
+    platform: linux/amd64
+    image: postgres:17.0-alpine
+    environment:
+      - POSTGRES_DB=images
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    ports:
+      - '5432:5432'
+    restart: always
+
+  backend:
+    build:
+      context: .
+    container_name: flask-backend
+    platform: linux/amd64
+    environment:
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - HOST=database
+    ports:
+      - "5000:5000" 
+    depends_on:
+      - database  
+    restart: always

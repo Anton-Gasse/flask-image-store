@@ -1,0 +1,6 @@
+flask == 3.0.3
+Flask-SQLAlchemy == 3.1.1
+psycopg2-binary == 2.9.10
+Flask-Migrate == 4.0.7
+cryptography == 43.0.3
+gunicorn == 23.0.0
