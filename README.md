@@ -22,6 +22,11 @@
    ```bash
    docker compose up
    ```
+4. Add API-keys to the database [OPTIONAL]:
+   ```bash
+   #Inside your database in the docker database container:
+   INSERT INTO api_key (api_key, name, timestamp) VALUES ('abcdefg', 'test_user', NOW()); 
+   ```
 
 ### 🛠️ Development Setup
 1. Clone the repository:
@@ -38,7 +43,7 @@
    docker run -d --name my_postgres_container \
        -e POSTGRES_USER=<myuser> \
        -e POSTGRES_PASSWORD=<mypassword> \
-       -e POSTGRES_DB=<mydatabase> \
+       -e POSTGRES_DB=images \
        -p 5432:5432 postgres
    ```
 4. Set the environment variables:
@@ -51,7 +56,13 @@
    ```bash
    flask db upgrade
    ```
-6. Start the development server:
+6. Add API-keys to the database [OPTIONAL]:
+   ```bash
+   #Inside your database in the docker database container:
+   INSERT INTO api_key (api_key, name, timestamp) VALUES ('abcdefg', 'test_user', NOW()); 
+   ```
+
+7. Start the development server:
    ```bash
    python3 app.py
    ```
@@ -59,10 +70,15 @@
 ## 🔗 API Endpoints
 
 ### 📤 `POST /upload`
-- **Description**: Uploads an image, encrypts and stores it in the database, and returns a unique hash for retrieval. Also triggers cleanup of expired images.
+- **Description**: Uploads an image, encrypts and stores it in the database, and returns a unique hash for retrieval. If there is no API-key in the database you don't have to provide one. Otherwise you have to add one to the request header. Also triggers cleanup of expired images.
 - **Request Example**:
    ```bash
+   # No API-key:
    curl -X POST -F "file=@test.jpg" http://127.0.0.1:5000/upload
+   ```
+   ```bash
+   # With API-key:
+   curl -X POST -F "file=@test.jpg" -H "api-key: abcdefg" http://127.0.0.1:5000/upload
    ```
 
 ### 📥 `GET /image/<image_hash>`

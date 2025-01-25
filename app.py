@@ -4,6 +4,7 @@ import uuid
 from io import BytesIO
 import hashlib
 from db.image import Image
+from db.api_key import APIKey
 from create_app import app
 from db import db
 from cryptography.fernet import Fernet
@@ -20,6 +21,21 @@ if not os.path.exists(IMAGE_FOLDER):
 
 @app.route("/upload", methods=["POST"])
 def upload() -> flask.Response:
+
+    has_api_keys = db.session.query(APIKey).count() > 0
+
+    if has_api_keys:
+
+        api_key = flask.request.headers.get("api-key")
+        
+        if not api_key:
+            return flask.Response("API key is missing", 401)
+
+        key_exists = db.session.query(APIKey).filter_by(api_key=api_key).one_or_none()
+        
+        if not key_exists:
+            return flask.Response("Invalid API key", 403)
+
 
     cleanup()
 
